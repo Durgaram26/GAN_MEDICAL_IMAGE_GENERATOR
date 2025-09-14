@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dataset Analysis - Medical StyleGAN</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      transition: background 0.3s, color 0.3s;
+    }
+    .header-section {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 2rem 0;
+      color: white;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .analysis-table {
+      margin-bottom: 2rem;
+    }
+    .sample-img {
+      max-width: 100%;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .graph-section {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+    .toggle-switch {
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .dark-mode {
+      background: #121212;
+      color: #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">Medical StyleGAN</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/generate">Generate Images</a></li>
+          <li class="nav-item"><a class="nav-link" href="/enhance">Enhance Images</a></li>
+          <li class="nav-item"><a class="nav-link" href="/upscale">Upscale Images</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/dataset_analysis">Analyze Dataset</a></li>
+        </ul>
+        <span class="toggle-switch text-light ms-3" onclick="toggleDarkMode()">🌙</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header Section -->
+  <header class="header-section">
+    <div class="container">
+      <h1>Dataset Analysis</h1>
+      <p class="lead">Analysis for dataset folder: {{ folder }}</p>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Analysis Summary -->
+    <div class="mb-4">
+      <h3>Dataset Summary</h3>
+      <table class="table table-bordered analysis-table">
+        <tbody>
+          <tr>
+            <th>Total Images</th>
+            <td>{{ analysis.total_images }}</td>
+          </tr>
+          <tr>
+            <th>Average Width</th>
+            <td>{{ analysis.avg_width }}</td>
+          </tr>
+          <tr>
+            <th>Average Height</th>
+            <td>{{ analysis.avg_height }}</td>
+          </tr>
+          <tr>
+            <th>Sample Count</th>
+            <td>{{ analysis.sample_count }}</td>
+          </tr>
+          <tr>
+            <th>Analysis Time</th>
+            <td>{{ analysis.timestamp }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Graphs Section -->
+    <div class="graph-section">
+      <h3>Pixel Intensity Histogram</h3>
+      <canvas id="histogramChart"></canvas>
+    </div>
+
+    <!-- Sample Images Section -->
+    <div class="mb-4">
+      <h3>Sample Images (Showing up to 50)</h3>
+      <div class="row">
+        {% for url in sample_urls[:50] %}
+          <div class="col-md-3 mb-3">
+            <img src="{{ url }}" alt="Sample Image" class="img-fluid sample-img">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <a href="/" class="btn btn-secondary mb-5">Back to Home</a>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container">
+      <p class="mb-0">&copy; 2025 Medical StyleGAN Application</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    function toggleDarkMode(){
+      document.body.classList.toggle('dark-mode');
+      var mode = document.body.classList.contains('dark-mode') ? '🌞' : '🌙';
+      document.querySelector('.toggle-switch').textContent = mode;
+    }
+
+    // Generate the histogram chart using Chart.js
+    document.addEventListener('DOMContentLoaded', function() {
+      // Assuming analysis.histogram is an array of numbers (e.g., 256 bins for pixel intensities)
+      var histogramData = {{ analysis.histogram | tojson }};
+      var labels = histogramData.map((_, index) => index);
+
+      var ctx = document.getElementById('histogramChart').getContext('2d');
+      var histogramChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Pixel Intensity Distribution',
+            data: histogramData,
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 20
+              }
+            },
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" defer></script>
+</body>
+</html>

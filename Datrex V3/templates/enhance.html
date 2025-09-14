@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhance Image - Medical StyleGAN</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      transition: background 0.3s, color 0.3s;
+    }
+    .header-section {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 2rem 0;
+      color: white;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .card {
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+    }
+    .toggle-switch {
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .dark-mode {
+      background: #121212;
+      color: #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">Medical StyleGAN</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/generate">Generate Images</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/enhance">Enhance Images</a></li>
+          <li class="nav-item"><a class="nav-link" href="/upscale">Upscale Images</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dataset_analysis">Analyze Dataset</a></li>
+        </ul>
+        <span class="toggle-switch text-light ms-3" onclick="toggleDarkMode()">🌙</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header Section -->
+  <header class="header-section">
+    <div class="container">
+      <h1>Enhance Image</h1>
+      <p class="lead">Upload an image and adjust brightness, contrast, and sharpness.</p>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h5>Enhance Your Image</h5>
+          </div>
+          <div class="card-body">
+            <form action="/enhance" method="post" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label class="form-label">Select Image:</label>
+                <input type="file" class="form-control" name="image" accept=".png,.jpg,.jpeg,.tiff,.dicom,.dcm" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Brightness:</label>
+                <input type="number" class="form-control" name="brightness" value="1.0" step="0.1" min="0">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Contrast:</label>
+                <input type="number" class="form-control" name="contrast" value="1.0" step="0.1" min="0">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Sharpness:</label>
+                <input type="number" class="form-control" name="sharpness" value="1.0" step="0.1" min="0">
+              </div>
+              <button type="submit" class="btn btn-success w-100">Enhance Image</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <a href="/" class="btn btn-secondary mt-3">Back to Home</a>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container">
+      <p class="mb-0">&copy; 2025 Medical StyleGAN Application</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      var mode = document.body.classList.contains('dark-mode') ? '🌞' : '🌙';
+      document.querySelector('.toggle-switch').textContent = mode;
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" defer></script>
+</body>
+</html>

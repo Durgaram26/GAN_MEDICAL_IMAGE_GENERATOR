@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Viewer</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .img-grid { display: flex; flex-wrap: wrap; }
+    .img-grid div { margin: 5px; }
+    .img-grid img { max-width: 150px; height: auto; border: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="mt-4">Data Viewer</h1>
+    <h3>Synthetic Images</h3>
+    <div class="img-grid">
+      {% for img in synthetic %}
+      <div><img src="{{ url_for('results', filename=img) }}" alt="Synthetic"></div>
+      {% endfor %}
+    </div>
+    <h3>Mixed Images</h3>
+    <div class="img-grid">
+      {% for img in mixed %}
+      <div><img src="{{ url_for('results', filename=img) }}" alt="Mixed"></div>
+      {% endfor %}
+    </div>
+    <h3>Real Images</h3>
+    <div class="img-grid">
+      {% for img in real %}
+      <div><img src="{{ url_for('uploaded_file', filename=img) }}" alt="Real"></div>
+      {% endfor %}
+    </div>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary mt-4">Back to Dashboard</a>
+  </div>
+</body>
+</html>

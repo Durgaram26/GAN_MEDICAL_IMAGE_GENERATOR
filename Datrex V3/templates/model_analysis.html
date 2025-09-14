@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Analysis - Medical StyleGAN</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      transition: background 0.3s, color 0.3s;
+    }
+    .header-section {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 2rem 0;
+      color: white;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .analysis-table {
+      margin-bottom: 2rem;
+    }
+    .graph-section {
+      margin-bottom: 2rem;
+    }
+    .toggle-switch {
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .dark-mode {
+      background: #121212;
+      color: #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">Medical StyleGAN</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/generate">Generate Images</a></li>
+          <li class="nav-item"><a class="nav-link" href="/enhance">Enhance Images</a></li>
+          <li class="nav-item"><a class="nav-link" href="/upscale">Upscale Images</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/model_analysis/{{ model_name }}">Model Analysis</a></li>
+        </ul>
+        <span class="toggle-switch text-light ms-3" onclick="toggleDarkMode()">🌙</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header Section -->
+  <header class="header-section">
+    <div class="container">
+      <h1>Model Analysis</h1>
+      <p class="lead">Performance outcomes for model: <strong>{{ model_name }}</strong></p>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Performance Metrics -->
+    <div class="mb-4">
+      <h3>Performance Outcomes</h3>
+      <table class="table table-bordered analysis-table">
+        <tbody>
+          <tr>
+            <th>Diagnostic Accuracy Increase</th>
+            <td>{{ performance.accuracy_increase }}%</td>
+          </tr>
+          <tr>
+            <th>Dependency on Real Patient Data Reduction</th>
+            <td>{{ performance.data_dependency_reduction }}%</td>
+          </tr>
+          <tr>
+            <th>Data Diversity & Model Generalization</th>
+            <td>{{ performance.data_diversity }}</td>
+          </tr>
+          <tr>
+            <th>Final Generator Loss</th>
+            <td>{{ performance.final_gen_loss }}</td>
+          </tr>
+          <tr>
+            <th>Epochs Completed</th>
+            <td>{{ performance.epochs_completed }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Performance Graph -->
+    <div class="graph-section">
+      <h3>Training Loss Over Epochs</h3>
+      <canvas id="performanceChart"></canvas>
+    </div>
+
+    <a href="/" class="btn btn-secondary mb-5">Back to Home</a>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container">
+      <p class="mb-0">&copy; 2025 Medical StyleGAN Application</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    function toggleDarkMode(){
+      document.body.classList.toggle('dark-mode');
+      var mode = document.body.classList.contains('dark-mode') ? '🌞' : '🌙';
+      document.querySelector('.toggle-switch').textContent = mode;
+    }
+
+    // Render the performance chart using Chart.js
+    document.addEventListener('DOMContentLoaded', function() {
+      var graphData = {{ performance.graph_data | tojson }};
+      var ctx = document.getElementById('performanceChart').getContext('2d');
+      var performanceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: graphData.labels,
+          datasets: [{
+            label: 'Generator Loss',
+            data: graphData.values,
+            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 2,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" defer></script>
+</body>
+</html>

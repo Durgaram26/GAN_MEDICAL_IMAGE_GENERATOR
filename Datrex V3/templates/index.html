@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical StyleGAN - AI Image Processing</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      transition: background 0.3s, color 0.3s;
+    }
+    .card {
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+    .card:hover {
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    .header-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2rem 0;
+      color: white;
+      margin-bottom: 2rem;
+    }
+    .dark-mode {
+      background: #121212;
+      color: white;
+    }
+    .toggle-switch {
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">Medical StyleGAN</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/generate">Generate Images</a></li>
+          <li class="nav-item"><a class="nav-link" href="/enhance">Enhance Images</a></li>
+          <li class="nav-item"><a class="nav-link" href="/upscale">Upscale Images</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dataset_analysis">Analyze Dataset</a></li>
+        </ul>
+        <!-- Dark Mode Toggle -->
+        <span class="toggle-switch text-light ms-3" onclick="toggleDarkMode()">🌙</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header Section -->
+  <header class="header-section text-center">
+    <div class="container">
+      <h1>Medical Image Processing with AI</h1>
+      <p class="lead">Generate, enhance, and analyze medical images using cutting-edge AI technology.</p>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="row">
+      <!-- Upload Training Data Card -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h5>Upload Training Data</h5>
+          </div>
+          <div class="card-body">
+            <form action="/upload" method="post" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label class="form-label">Select Images:</label>
+                <input type="file" class="form-control" name="file" multiple accept=".png,.jpg,.jpeg,.tiff,.dicom,.dcm">
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Upload</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Train StyleGAN Model Card -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <h5>Train StyleGAN Model</h5>
+          </div>
+          <div class="card-body">
+            <form action="/train" method="post">
+              <div class="mb-3">
+                <label class="form-label">Select Data Folder:</label>
+                <select class="form-select" name="upload_folder" required>
+                  <option value="">Select...</option>
+                  {% for folder in upload_folders %}
+                    <option value="{{ folder }}">{{ folder }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Epochs:</label>
+                <input type="number" class="form-control" name="epochs" value="100" min="1" max="1000">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Batch Size:</label>
+                <input type="number" class="form-control" name="batch_size" value="16" min="1" max="64">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Learning Rate:</label>
+                <input type="number" class="form-control" name="learning_rate" value="0.0002" step="any">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Image Size:</label>
+                <select class="form-select" name="image_size" required>
+                  <option value="64">64</option>
+                  <option value="128">128</option>
+                  <option value="256" selected>256</option>
+                  <option value="512">512</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Z Dimension:</label>
+                <select class="form-select" name="z_dim" required>
+                  <option value="128">128</option>
+                  <option value="256">256</option>
+                  <option value="512" selected>512</option>
+                  <option value="1024">1024</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-success w-100">Start Training</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Available Models Section -->
+    <div class="mt-4">
+      <h3 class="mb-3">Available Models</h3>
+      <div class="row">
+        {% for model in models %}
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">{{ model }}</h5>
+                <a href="{{ url_for('model_info', model_name=model) }}" class="btn btn-sm btn-info">View Info</a>
+                <a href="{{ url_for('generate') }}?model={{ model }}" class="btn btn-sm btn-primary">Generate Images</a>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="col">
+            <p>No models available yet. Train a model to get started.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white mt-5 py-3 text-center">
+    <p class="mb-0">&copy; 2025 Medical StyleGAN Application</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      let mode = document.body.classList.contains('dark-mode') ? '🌞' : '🌙';
+      document.querySelector('.toggle-switch').textContent = mode;
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" defer></script>
+</body>
+</html>
