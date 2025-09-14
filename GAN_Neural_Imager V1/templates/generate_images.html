@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="glass-card p-8 rounded-lg shadow-2xl">
+    <div class="flex items-center mb-6">
+      <svg class="h-10 w-10 text-purple-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M19.5 12L20.25 12M3.75 12L4.5 12M12 4.5V3.75M12 20.25V19.5M18.364 18.364L18.894 18.894M5.106 5.106L5.636 5.636M18.364 5.636L18.894 5.106M5.106 18.894L5.636 18.364" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3.34255 11C3.12692 11.9326 3 12.9005 3 13.8978C3 18.3641 6.61873 22 11.0638 22C15.5089 22 19.1277 18.3641 19.1277 13.8978C19.1277 12.9005 19.0007 11.9326 18.7851 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8.40208 2.8C9.2474 2.29 10.212 2 11.234 2C15.1539 2 18.3404 5.2 18.3404 9.14C18.3404 10.169 18.0517 11.14 17.5447 11.991" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h2 class="text-2xl font-bold ml-3 text-gray-800">Generate Synthetic Images</h2>
+    </div>
+    
+    <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-5 rounded-lg mb-6 border border-purple-100">
+      <p class="text-gray-700">
+        Create synthetic images using your trained generative models. Select a model and configure generation settings below.
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold mb-4 flex items-center text-purple-800">
+          <svg class="h-5 w-5 text-purple-500 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9.5 14.5L11.5 16.5L14.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M13 2V6M11 4H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Generation Settings
+        </h3>
+        
+        <form action="{{ url_for('generate_images') }}" method="post" class="space-y-5">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-gray-700 text-sm font-medium mb-2">Select a Trained Generative Model</label>
+              <div class="relative">
+                <select name="model_name" required class="appearance-none block w-full bg-gray-50 border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                  {% for name, model in models.items() %}
+                    {% if model.model_type in ["GAN", "StyleGAN", "StyleGAN2 ADA"] %}
+                      <option value="{{ name }}">{{ name }} ({{ model.model_type }})</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-gray-700 text-sm font-medium mb-2">Number of Images</label>
+              <div class="mt-1 relative rounded-md shadow-sm">
+                <input type="number" name="num_images" value="5" min="1" max="20" required class="focus:ring-purple-500 focus:border-purple-500 block w-full pl-3 pr-12 py-2 sm:text-sm border border-gray-300 rounded-md" placeholder="5">
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500 sm:text-sm">images</span>
+                </div>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">Generate between 1-20 images at a time</p>
+            </div>
+            
+            <div class="flex items-center">
+              <input type="checkbox" name="confirm_save" id="confirm_save" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+              <label for="confirm_save" class="ml-2 block text-sm text-gray-700">
+                Save generated images to gallery
+              </label>
+            </div>
+          </div>
+          
+          <div class="pt-4">
+            <button type="submit" class="w-full flex justify-center items-center bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-2 px-4 rounded-md shadow-md hover:shadow-lg transition-all">
+              <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4V12M12 12L9 9M12 12L15 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 18H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Generate Images
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold mb-4 flex items-center text-purple-800">
+          <svg class="h-5 w-5 text-purple-500 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 19V5C4 3.89543 4.89543 3 6 3H19.4C19.7314 3 20 3.26863 20 3.6V16.7143" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8 3V10L10.5 8L13 10V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 17L20 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M6 21L20 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M6 21C4.89543 21 4 20.1046 4 19C4 17.8954 4.89543 17 6 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20 21C21.1046 21 22 20.1046 22 19C22 17.8954 21.1046 17 20 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Generation History
+        </h3>
+        
+        {% if generated_images %}
+          <div class="overflow-hidden rounded-lg mb-4 border border-gray-200">
+            <div class="p-3 bg-purple-50 border-b border-gray-200">
+              <span class="text-sm font-medium text-purple-800">Recently Generated</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-2 gap-2 p-3">
+              {% for img in generated_images %}
+                <div class="group relative rounded-md overflow-hidden shadow-sm hover:shadow-md transition-all">
+                  <img src="data:image/png;base64,{{ img }}" alt="Synthetic Image" class="w-full h-32 object-cover">
+                  <div class="absolute inset-0 bg-gradient-to-t from-purple-500/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center">
+                    <div class="p-2 w-full text-center">
+                      <span class="text-white text-xs">Generated Image</span>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          
+          {% if zip_link %}
+            <div class="mt-5 text-center">
+              <a href="{{ zip_link }}" class="inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md shadow-md hover:shadow-lg transition-all">
+                <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 7L12 17M12 17L8 13M12 17L16 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Download All as ZIP
+              </a>
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="bg-gray-50 rounded-lg p-8 text-center h-64 flex flex-col items-center justify-center">
+            <svg class="h-12 w-12 text-gray-400 mb-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 16L8.58579 11.4142C10.7573 9.24264 14.2427 9.24264 16.4142 11.4142L20 15M14 16L15.5858 14.4142C16.8668 13.1332 18.7664 13.1332 20.0474 14.4142L20 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="9" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <p class="text-gray-500">No images generated yet</p>
+            <p class="text-sm text-gray-400 mt-1">Generated images will appear here</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    {% if generated_images %}
+      <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-semibold mb-4 flex items-center">
+          <svg class="h-6 w-6 text-purple-500 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 3H3V21H21V3Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 9H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 15H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 21V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 21V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Synthetic Image Gallery
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {% for img in generated_images %}
+            <div class="group relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200">
+              <img src="data:image/png;base64,{{ img }}" alt="Synthetic Image" class="w-full h-48 object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-purple-900/70 via-purple-600/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center">
+                <div class="p-3 w-full flex justify-between items-center">
+                  <span class="text-white text-sm font-medium">Image {{ loop.index }}</span>
+                  <button class="text-white p-1 rounded-full hover:bg-white/20 transition-colors" title="Download Image">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 8V16M12 16L15 13M12 16L9 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M3 15V16C3 18.2091 4.79086 20 7 20H17C19.2091 20 21 18.2091 21 16V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  
+  <!-- Add JavaScript for image gallery interactions -->
+  <script>
+    // Image preview modal functionality could be added here
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add any interactive features here
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Model Trainer</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js & GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <!-- Custom styles -->
+    <style>
+      /* Gradient background animation */
+      @keyframes gradientAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      .gradient-bg {
+        background: linear-gradient(-45deg, #0f172a, #1e293b, #374151, #1e40af);
+        background-size: 400% 400%;
+        animation: gradientAnimation 15s ease infinite;
+      }
+      
+      /* Glassmorphism style for cards */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      }
+      
+      /* Navigation link effects */
+      .nav-link {
+        transition: all 0.3s ease;
+        position: relative;
+      }
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        background-color: #38bdf8;
+        bottom: 0;
+        left: 50%;
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+      }
+      .nav-link:hover::after,
+      .active-link::after {
+        width: 80%;
+      }
+      .active-link {
+        font-weight: 600;
+        color: white;
+      }
+      
+      /* 3D Canvas styling */
+      #three-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -10;
+      }
+    </style>
+  </head>
+  <body class="gradient-bg relative min-h-screen">
+    <!-- 3D Background Canvas -->
+    <canvas id="three-canvas"></canvas>
+    
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-900 bg-opacity-75 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="{{ url_for('index') }}" class="flex items-center">
+            <svg class="h-8 w-8 text-blue-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4.75L4.75 8.25L12 11.75L19.25 8.25L12 4.75Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4.75 15.75L12 19.25L19.25 15.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4.75 12L12 15.5L19.25 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="ml-2 text-white font-bold text-xl">Model Trainer</span>
+          </a>
+          <div class="hidden md:flex space-x-4">
+            <a href="{{ url_for('data_manager') }}" class="nav-link text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm">Data Manager</a>
+            <a href="{{ url_for('train_model_route') }}" class="nav-link text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm">Train Model</a>
+            <a href="{{ url_for('generate_images') }}" class="nav-link text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm">Generate Images</a>
+            <a href="{{ url_for('upscale') }}" class="nav-link text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm">Upscale</a>
+            <a href="{{ url_for('model_analysis') }}" class="nav-link text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm">Analytics</a>
+          </div>
+          <div class="flex items-center">
+            <a href="{{ url_for('upload_model') }}" class="nav-link text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm">Upload Model</a>
+            <a href="/logout" class="nav-link text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm">Logout</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+      {% block content %}
+      {% endblock %}
+    </main>
+    
+    <!-- Three.js Background Script -->
+    <script>
+      // Initialize Three.js renderer
+      const canvas = document.getElementById('three-canvas');
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      
+      // Create scene and camera
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 0, 50);
+      
+      // Ambient and point lights for dynamic shading
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      scene.add(ambientLight);
+      const pointLight = new THREE.PointLight(0xffffff, 1);
+      pointLight.position.set(50, 50, 50);
+      scene.add(pointLight);
+      
+      // Create a rotating 3D object (Torus Knot)
+      const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+      const material = new THREE.MeshStandardMaterial({ color: 0x4f46e5, metalness: 0.6, roughness: 0.2 });
+      const torusKnot = new THREE.Mesh(geometry, material);
+      scene.add(torusKnot);
+      
+      // Animation loop
+      function animate() {
+        requestAnimationFrame(animate);
+        torusKnot.rotation.x += 0.005;
+        torusKnot.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+      
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+    </script>
+  </body>
+</html>

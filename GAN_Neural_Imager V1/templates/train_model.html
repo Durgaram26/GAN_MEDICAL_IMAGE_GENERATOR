@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="glass-card p-8 rounded-lg shadow-2xl">
+    <div class="flex items-center mb-6">
+      <svg class="h-10 w-10 text-indigo-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 6.5L17.5 10L14 13.5M9 17.5L5.5 14L9 10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h2 class="text-2xl font-bold ml-3 text-gray-800">Train Model</h2>
+    </div>
+    
+    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-lg mb-6 border border-indigo-100">
+      <p class="text-gray-700">
+        Configure and train models based on your uploaded data. Choose model type, hyperparameters, and loss function below.
+      </p>
+    </div>
+    
+    <!-- Real-Time Training Status -->
+    <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+      <h3 class="text-lg font-semibold mb-4">Training Progress</h3>
+      <div id="progress">
+        <p>Epoch: <span id="current_epoch">0</span> / <span id="total_epochs">0</span></p>
+        <p>Batch: <span id="current_batch">0</span> / <span id="total_batches">0</span></p>
+        <p>Generator Loss: <span id="loss_g">0.0000</span></p>
+        <p>Discriminator Loss: <span id="loss_d">0.0000</span></p>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start">
+        <svg class="h-8 w-8 text-blue-500 mr-2 mt-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9.5 14.5L11.5 16.5L14.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10.09 2.75L11.5 2V6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4.75 7.25L2.5 10L7 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2.75 13.91L2 12.5L6.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7.25 19.25L10 21.5L10 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13.91 21.25L12.5 22L12.5 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M19.25 16.75L21.5 14L17 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M21.25 10.09L22 11.5L17.5 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16.75 4.75L14 2.5L14 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div>
+          <h3 class="font-semibold text-blue-800">GAN</h3>
+          <p class="text-sm text-gray-600">Standard Generative Adversarial Network for synthetic image generation</p>
+        </div>
+      </div>
+      
+      <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-200 flex items-start">
+        <svg class="h-8 w-8 text-indigo-500 mr-2 mt-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 12H3.56044C4.6178 12 5.52316 11.304 5.83654 10.2915L7.16346 6.7085C7.47684 5.696 8.3822 5 9.43956 5H9.5M9.5 5H14.5604C15.6178 5 16.5232 5.696 16.8365 6.7085L18.1635 10.2915C18.4768 11.304 19.3822 12 20.4396 12H22M9.5 5L7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 15H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12V17.5C2 19.433 3.567 21 5.5 21H18.5C20.433 21 22 19.433 22 17.5V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div>
+          <h3 class="font-semibold text-indigo-800">StyleGAN</h3>
+          <p class="text-sm text-gray-600">Advanced GAN with style-based architecture for high-quality image synthesis</p>
+        </div>
+      </div>
+      
+      <div class="bg-purple-50 p-4 rounded-lg border border-purple-200 flex items-start">
+        <svg class="h-8 w-8 text-purple-500 mr-2 mt-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="2" y="13" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="13" y="2" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M13 17.5C13 15.0147 15.0147 13 17.5 13C19.9853 13 22 15.0147 22 17.5C22 19.9853 19.9853 22 17.5 22C15.0147 22 13 19.9853 13 17.5Z" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M17.5 13V17.5H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div>
+          <h3 class="font-semibold text-purple-800">ESRGAN/SRGAN</h3>
+          <p class="text-sm text-gray-600">Super-resolution models for enhancing image quality and resolution</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h3 class="text-lg font-semibold mb-4 flex items-center">
+        <svg class="h-5 w-5 text-indigo-500 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10.5 10.5002L10.5 4.50024M10.5 10.5002L4.5 10.5002M10.5 10.5002L19.5 19.5002" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Configure Your Model
+      </h3>
+      
+      <form action="{{ url_for('train_model_route') }}" method="post" class="mb-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Custom Model Name</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M9.5 11.5L17.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M16 3H21V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <input type="text" name="custom_name" required class="border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm pl-10 pr-4 py-2 w-full transition-colors" placeholder="e.g. MyStyleGAN_v1" />
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Select Model Type</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 3.5V2M5.06066 5.06066L4 4M5.06066 13L4 14.0607M13 5.06066L14.0607 4M3.5 9H2M12.5 9C12.5 11.2091 10.7091 13 8.5 13C6.29086 13 4.5 11.2091 4.5 9C4.5 6.79086 6.29086 5 8.5 5C10.7091 5 12.5 6.79086 12.5 9Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M15 16L17 16M17 16L19 16M17 16L17 14M17 16L17 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <select name="model_type" required class="border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm pl-10 pr-10 py-2 w-full appearance-none bg-none transition-colors">
+                <option value="GAN">GAN</option>
+                <option value="StyleGAN">StyleGAN</option>
+                <option value="StyleGAN2 ADA">StyleGAN2 ADA</option>
+                <option value="ESRGAN">ESRGAN</option>
+                <option value="SRGAN">SRGAN</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Training Parameters Section -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h4 class="text-md font-medium mb-4 text-gray-700">Training Parameters</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-gray-600 text-sm font-medium mb-1">Epochs</label>
+              <div class="relative">
+                <input type="number" name="epochs" value="5" min="1" required class="border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm py-2 px-3 w-full transition-colors" />
+                <div class="absolute right-0 pr-3 inset-y-0 flex items-center pointer-events-none text-xs text-gray-400">
+                  iterations
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-gray-600 text-sm font-medium mb-1">Batch Size</label>
+              <input type="number" name="batch_size" value="8" min="1" required class="border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm py-2 px-3 w-full transition-colors" />
+            </div>
+            
+            <div>
+              <label class="block text-gray-600 text-sm font-medium mb-1">Learning Rate</label>
+              <input type="text" name="lr" value="0.0002" required class="border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm py-2 px-3 w-full transition-colors" />
+            </div>
+            
+            <div>
+              <label class="block text-gray-600 text-sm font-medium mb-1">Latent Dimension</label>
+              <input type="number" name="latent_dim" value="100" min="50" max="200" required class="border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm py-2 px-3 w-full transition-colors" />
+            </div>
+            
+            <div>
+              <label class="block text-gray-600 text-sm font-medium mb-1">Upscale Factor</label>
+              <select name="upscale_factor" class="border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm py-2 px-3 w-full transition-colors">
+                <option value="2">2x</option>
+                <option value="3">3x</option>
+                <option value="4">4x</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Additional Hyperparameters Section -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h4 class="text-md font-medium mb-4 text-gray-700">Additional Hyperparameters</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-gray-600 text-sm font-medium mb-1">Loss Function</label>
+              <select name="loss_function" class="border border-gray-300 rounded-md shadow-sm py-2 px-3 w-full">
+                <option value="BCE" selected>BCE Loss</option>
+                <option value="Wasserstein">Wasserstein Loss</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-gray-600 text-sm font-medium mb-1">Feature Maps</label>
+              <input type="number" name="feature_maps" value="64" min="16" max="128" required class="border border-gray-300 rounded-md shadow-sm py-2 px-3 w-full">
+            </div>
+          </div>
+        </div>
+        
+        <button type="submit" class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center">
+          <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.0784 19.0784L16.25 16.25M19.0784 4.99994L16.25 7.82838M4.92157 19.0784L7.75 16.25M4.92157 4.99994L7.75 7.82838" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Start Training
+        </button>
+      </form>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold mb-4 flex items-center">
+        <svg class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Trained Models
+      </h3>
+      
+      {% if models %}
+        <div class="divide-y divide-gray-200">
+          {% for name, model in models.items() %}
+            <div class="py-3 flex justify-between items-center group hover:bg-gray-50 px-2 rounded-md">
+              <div>
+                <span class="font-medium text-gray-800">{{ name }}</span>
+                <span class="ml-2 text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">{{ model.model_type }}</span>
+              </div>
+              <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="text-blue-500 hover:text-blue-700 mr-2">
+                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 5L5 15M5 15V9M5 15H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M19 19L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button class="text-red-500 hover:text-red-700">
+                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="bg-gray-50 rounded-lg p-8 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <p class="mt-2 text-gray-500">No models trained yet</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- JavaScript for Real-Time Updates -->
+  <script>
+    function updateProgress() {
+      fetch("{{ url_for('progress') }}")
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("current_epoch").innerText = data.epoch;
+          document.getElementById("total_epochs").innerText = data.total_epochs;
+          document.getElementById("current_batch").innerText = data.batch;
+          document.getElementById("total_batches").innerText = data.total_batches;
+          document.getElementById("loss_g").innerText = data.loss_G.toFixed(4);
+          document.getElementById("loss_d").innerText = data.loss_D.toFixed(4);
+        })
+        .catch(error => console.error("Error fetching progress:", error));
+    }
+    // Poll the /progress endpoint every second
+    setInterval(updateProgress, 1000);
+  </script>
+{% endblock %}

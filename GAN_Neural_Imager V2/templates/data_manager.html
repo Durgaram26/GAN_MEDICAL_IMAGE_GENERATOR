@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-card p-8 rounded-lg shadow-2xl">
+  <div class="flex items-center mb-6">
+    <h2 class="text-2xl font-bold ml-3 text-gray-800">Data Manager</h2>
+  </div>
+  
+  <!-- Description Section -->
+  <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-5 rounded-lg mb-6 border border-blue-100">
+    <p class="text-gray-700">
+      Upload your training images by either selecting an entire folder or choosing individual files/zip archives. High-quality and diverse datasets lead to better training results.
+    </p>
+  </div>
+  
+  <!-- Upload Form Section -->
+  <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+    <h3 class="text-lg font-semibold mb-4 flex items-center">
+      Upload Images, Folders, or Zip Files
+    </h3>
+    
+    <form action="{{ url_for('data_manager') }}" method="post" enctype="multipart/form-data" class="mb-6">
+      <!-- Folder Upload -->
+      <div class="mb-4">
+        <label class="font-bold text-gray-700 block mb-2">Upload a Folder:</label>
+        <input type="file" name="folders" webkitdirectory multiple class="border border-gray-300 rounded p-2 w-full" />
+      </div>
+      
+      <!-- Individual Files or Zip Files -->
+      <div class="mb-4">
+        <label class="font-bold text-gray-700 block mb-2">Upload File(s) or Zip(s):</label>
+        <input type="file" name="files" multiple class="border border-gray-300 rounded p-2 w-full" />
+      </div>
+      
+      <button type="submit" class="mt-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all">
+        Upload
+      </button>
+    </form>
+  </div>
+  
+  <!-- Uploaded Images Preview -->
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold mb-4 flex items-center">
+      Uploaded Images
+      <span class="text-sm font-normal text-gray-500 ml-2">(Preview of first 5)</span>
+    </h3>
+    
+    {% if images %}
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {% for img in images %}
+          <div class="group relative rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200">
+            <img src="{{ url_for('uploaded_file', filename=img) }}" alt="Uploaded Image" class="w-full h-48 object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+              <div class="p-3 w-full">
+                <p class="text-white truncate text-sm">{{ img }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="bg-gray-50 rounded-lg p-8 text-center">
+        <p class="mt-2 text-gray-500">No images uploaded yet</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

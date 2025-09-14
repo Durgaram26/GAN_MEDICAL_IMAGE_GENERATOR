@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - NeuralImager</title>
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <!-- GSAP & Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #5046e5;
+      --secondary: #06b6d4;
+      --dark: #1e293b;
+      --light: #f8fafc;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0f172a;
+      color: #f1f5f9;
+      overflow-x: hidden;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.36);
+      border-radius: 1rem;
+    }
+    
+    .card {
+      transition: transform 0.3s ease;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+    
+    .card:hover {
+      transform: translateY(-10px) rotateX(5deg);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 14px rgba(80,70,229,0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(80,70,229,0.6);
+    }
+    
+    /* Three.js Background Canvas */
+    #canvas-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: #0f172a;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas-background"></canvas>
+  
+  <!-- Login Card -->
+  <div class="card glass p-8 md:p-12 w-full max-w-md mx-auto animate__animated animate__fadeInUp">
+    <h1 class="text-3xl font-bold mb-6 text-center">Login</h1>
+    <form action="/login" method="post" class="space-y-6">
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-300">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter username" class="mt-2 block w-full rounded-md border-gray-700 bg-transparent text-white focus:border-indigo-400 focus:ring-indigo-400" required />
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-300">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" class="mt-2 block w-full rounded-md border-gray-700 bg-transparent text-white focus:border-indigo-400 focus:ring-indigo-400" required />
+      </div>
+      <div>
+        <button type="submit" class="btn-primary w-full flex items-center justify-center">
+          <i class="fas fa-sign-in-alt mr-2"></i> <span>Sign In</span>
+        </button>
+      </div>
+    </form>
+    <p class="mt-4 text-center text-gray-400 text-sm">© 2025 NeuralImager. All rights reserved.</p>
+  </div>
+  
+  <!-- Scripts -->
+  <script>
+    // Three.js Background Animation
+    const canvas = document.getElementById('canvas-background');
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.z = 400;
+    
+    // Create a particle system
+    const particles = new THREE.BufferGeometry();
+    const particleCount = 500;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount * 3; i++) {
+      positions[i] = (Math.random() - 0.5) * 800;
+    }
+    particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    
+    const particleMaterial = new THREE.PointsMaterial({
+      color: 0x8888ff,
+      size: 3,
+      transparent: true,
+      opacity: 0.7
+    });
+    const pointCloud = new THREE.Points(particles, particleMaterial);
+    scene.add(pointCloud);
+    
+    function animate() {
+      requestAnimationFrame(animate);
+      pointCloud.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    }
+    animate();
+    
+    window.addEventListener('resize', () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="glass-card p-8 rounded-lg shadow-2xl">
+    <div class="flex items-center mb-6">
+      <svg class="h-10 w-10 text-purple-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 17L21 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 12L21 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 7L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4.5 17C5.32843 17 6 16.3284 6 15.5C6 14.6716 5.32843 14 4.5 14C3.67157 14 3 14.6716 3 15.5C3 16.3284 3.67157 17 4.5 17Z" fill="currentColor"/>
+        <path d="M4.5 7C5.32843 7 6 6.32843 6 5.5C6 4.67157 5.32843 4 4.5 4C3.67157 4 3 4.67157 3 5.5C3 6.32843 3.67157 7 4.5 7Z" fill="currentColor"/>
+        <path d="M4.5 12C5.32843 12 6 11.3284 6 10.5C6 9.67157 5.32843 9 4.5 9C3.67157 9 3 9.67157 3 10.5C3 11.3284 3.67157 12 4.5 12Z" fill="currentColor"/>
+      </svg>
+      <h2 class="text-2xl font-bold ml-3 text-gray-800">Model Analysis</h2>
+    </div>
+    
+    <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-5 rounded-lg mb-6 border border-purple-100">
+      <p class="text-gray-700">
+        Analyze the performance of your trained models. View metrics, training loss graphs, and other key insights.
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Model Selection Form -->
+      <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold mb-4 flex items-center">
+          <svg class="h-5 w-5 text-purple-500 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 18H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 18H3.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 12H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 12H3.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 6H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 6H3.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Select Model
+        </h3>
+        
+        <form action="{{ url_for('model_analysis') }}" method="post" class="mb-6">
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2">Model</label>
+            <div class="relative">
+              <select name="model_name" required class="block appearance-none w-full bg-white border border-gray-300 hover:border-purple-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline focus:border-purple-500 transition-colors">
+                {% for name, model in models.items() %}
+                  <option value="{{ name }}">{{ name }} ({{ model.model_type }})</option>
+                {% endfor %}
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-2 px-4 rounded-md shadow-md hover:shadow-lg transition-all flex items-center justify-center">
+            <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 12H4.5C3.11929 12 2 10.8807 2 9.5V9.5C2 8.11929 3.11929 7 4.5 7H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 19H19.5C20.8807 19 22 17.8807 22 16.5V16.5C22 15.1193 20.8807 14 19.5 14H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 19H4.5C3.11929 19 2 17.8807 2 16.5V16.5C2 15.1193 3.11929 14 4.5 14H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 12H19.5C20.8807 12 22 10.8807 22 9.5V9.5C22 8.11929 20.8807 7 19.5 7H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 22V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Analyze Model
+          </button>
+        </form>
+      </div>
+      
+      <!-- Analysis Output -->
+      <div class="lg:col-span-2">
+        {% if analysis %}
+          <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+              <svg class="h-5 w-5 text-purple-500 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 17H16M8 17C6.89543 17 6 16.1046 6 15V11M8 17L5 20M16 17C17.1046 17 18 16.1046 18 15V11M16 17L19 20M6 11V9C6 7.89543 6.89543 7 8 7H16C17.1046 7 18 7.89543 18 9V11M6 11H18M10 14H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M10 7V5C10 3.89543 10.8954 3 12 3V3C13.1046 3 14 3.89543 14 5V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Analysis Metrics
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {% for key, value in analysis.items() %}
+                <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  <div class="text-sm text-gray-500">{{ key }}</div>
+                  <div class="text-lg font-semibold text-gray-800">{{ value }}</div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        
+        {% if graph %}
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+              <svg class="h-5 w-5 text-purple-500 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 16.5L9 10.5L13 14.5L21 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 3L21 3L21 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M21 16V21H3V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Training Loss Graph
+            </h3>
+            
+            <div class="border border-gray-200 rounded-lg overflow-hidden shadow-inner bg-white">
+              <img src="data:image/png;base64,{{ graph }}" alt="Loss Graph" class="w-full rounded">
+            </div>
+            
+            <div class="mt-4 text-sm text-gray-600">
+              <p>This graph shows the training loss over time. Lower values indicate better model performance.</p>
+            </div>
+          </div>
+        {% else %}
+          <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center text-center h-full">
+            <svg class="h-16 w-16 text-gray-300 mb-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 14L12 12M12 12L14 10M12 12L10 10M12 12L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3 class="text-xl font-medium text-gray-500">No Analysis Data</h3>
+            <p class="text-gray-400 mt-2">Select a model to view performance metrics and training graphs</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
